@@ -26,6 +26,110 @@
     'Oracle Certified Java Developer'
   ];
 
+  // Web Audio Celebration & Sound Effects Synthesizer
+  const SoundFX = {
+    enabled: localStorage.getItem('placenexus_sound_muted') !== 'true',
+    ctx: null,
+    getContext() {
+      if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      return this.ctx;
+    },
+    toggle() {
+      this.enabled = !this.enabled;
+      try {
+        localStorage.setItem('placenexus_sound_muted', (!this.enabled).toString());
+      } catch (e) {}
+      return this.enabled;
+    },
+    playChime() {
+      if (!this.enabled) return;
+      try {
+        const ctx = this.getContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+          gain.gain.setValueAtTime(0.18, now + idx * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.55);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.09);
+          osc.stop(now + idx * 0.09 + 0.55);
+        });
+      } catch (e) {}
+    },
+    playPop() {
+      if (!this.enabled) return;
+      try {
+        const ctx = this.getContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(540, now + 0.04);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } catch (e) {}
+    }
+  };
+
+  // Preset Student Personas for Instant Demonstration
+  const STUDENT_PERSONAS = {
+    alex: {
+      name: 'Alexandria Chen',
+      rollNo: '22CS1048',
+      department: 'Computer Science (CSE)',
+      gradYear: '2026',
+      cgpa: 8.8,
+      backlogs: 0,
+      certs: [
+        'AWS Certified Solutions Architect',
+        'Meta Front-End Developer',
+        'Google Data Analytics Professional',
+        'Docker & Kubernetes (CKA)'
+      ]
+    },
+    rohan: {
+      name: 'Rohan Verma',
+      rollNo: '22IT1092',
+      department: 'Information Technology (IT)',
+      gradYear: '2026',
+      cgpa: 7.2,
+      backlogs: 0,
+      certs: [
+        'Cisco CCNA Routing & Switching',
+        'Microsoft Azure Fundamentals (AZ-900)'
+      ]
+    },
+    maya: {
+      name: 'Maya Patel',
+      rollNo: '22EC2015',
+      department: 'Electronics & Communication (ECE)',
+      gradYear: '2026',
+      cgpa: 6.4,
+      backlogs: 1,
+      certs: [
+        'Oracle Certified Java Developer'
+      ]
+    }
+  };
+
   // Default Student Placement Profile
   const DEFAULT_STUDENT_PROFILE = {
     name: 'Alexandria Chen',
@@ -358,6 +462,19 @@
       } catch (e) {
         console.error('Failed to save placement state:', e);
       }
+    }
+
+    resetToDefaults() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {
+        console.error(e);
+      }
+      this.student = JSON.parse(JSON.stringify(DEFAULT_STUDENT_PROFILE));
+      this.jobs = JSON.parse(JSON.stringify(INITIAL_JOBS));
+      this.applied = JSON.parse(JSON.stringify(INITIAL_APPLICATIONS));
+      this.interviews = JSON.parse(JSON.stringify(INITIAL_SCHEDULED_INTERVIEWS));
+      this.save();
     }
 
     getStudentCertNames() {
@@ -713,7 +830,26 @@
       this.addCertModal = document.getElementById('add-cert-modal');
       this.postJobModal = document.getElementById('post-job-modal');
       this.offerLetterModal = document.getElementById('offer-letter-modal');
+      this.interviewLobbyModal = document.getElementById('interview-lobby-modal');
+      this.placementResumeModal = document.getElementById('placement-resume-modal');
       this.toastContainer = document.getElementById('toast-container');
+
+      // Extended Nav & Action Buttons
+      this.btnViewResumeNav = document.getElementById('btn-view-resume-nav');
+      this.btnResetDemoNav = document.getElementById('btn-reset-demo-nav');
+      this.btnHeaderResume = document.getElementById('btn-header-resume');
+      this.btnToggleSound = document.getElementById('btn-toggle-sound');
+      this.soundIconOn = document.getElementById('sound-icon-on');
+      this.soundIconOff = document.getElementById('sound-icon-off');
+      this.btnPersonaAlex = document.getElementById('btn-persona-alex');
+      this.btnPersonaRohan = document.getElementById('btn-persona-rohan');
+      this.btnPersonaMaya = document.getElementById('btn-persona-maya');
+      this.btnResetProfile = document.getElementById('btn-reset-profile');
+      this.btnPrintOffer = document.getElementById('btn-print-offer');
+      this.btnPrintResume = document.getElementById('btn-print-resume');
+      this.btnPrintResumeFooter = document.getElementById('btn-print-resume-footer');
+      this.btnCopyAts = document.getElementById('btn-copy-ats');
+      this.selectedInterviewForModal = null;
     }
 
     attachEventListeners() {
@@ -913,14 +1049,85 @@
         });
       }
 
+      // Audio FX Toggle
+      if (this.btnToggleSound) {
+        this.btnToggleSound.addEventListener('click', () => {
+          const enabled = SoundFX.toggle();
+          if (this.soundIconOn && this.soundIconOff) {
+            this.soundIconOn.classList.toggle('hidden', !enabled);
+            this.soundIconOff.classList.toggle('hidden', enabled);
+          }
+          if (enabled) {
+            SoundFX.playPop();
+            this.showToast('Audio Celebrations & Sound Chimes Enabled 🔔', 'success');
+          } else {
+            this.showToast('Audio Muted', 'info');
+          }
+        });
+      }
+
+      // Placement Resume CV
+      this.btnViewResumeNav?.addEventListener('click', () => this.openPlacementResumeModal());
+      this.btnHeaderResume?.addEventListener('click', () => this.openPlacementResumeModal());
+      this.btnPrintResume?.addEventListener('click', () => window.print());
+      this.btnPrintResumeFooter?.addEventListener('click', () => window.print());
+      this.btnCopyAts?.addEventListener('click', () => this.copyAtsResume());
+      document.getElementById('btn-close-resume-modal')?.addEventListener('click', () => this.closeModal());
+      document.getElementById('btn-close-resume')?.addEventListener('click', () => this.closeModal());
+
+      // Demo Data Reset
+      this.btnResetDemoNav?.addEventListener('click', () => this.resetDemoData());
+      this.btnResetProfile?.addEventListener('click', () => {
+        this.switchStudentPersona('alex');
+        this.showToast('Profile form reset to default Alexandria Chen.', 'info');
+      });
+
+      // Quick Persona Presets
+      this.btnPersonaAlex?.addEventListener('click', () => this.switchStudentPersona('alex'));
+      this.btnPersonaRohan?.addEventListener('click', () => this.switchStudentPersona('rohan'));
+      this.btnPersonaMaya?.addEventListener('click', () => this.switchStudentPersona('maya'));
+
+      // Print Official Offer Letter
+      this.btnPrintOffer?.addEventListener('click', () => window.print());
+      document.getElementById('btn-modal-close-offer')?.addEventListener('click', () => this.closeModal());
+
+      // Virtual Interview Lobby
+      document.getElementById('btn-close-lobby-modal')?.addEventListener('click', () => this.closeModal());
+      document.getElementById('btn-close-lobby')?.addEventListener('click', () => this.closeModal());
+      document.getElementById('btn-lobby-join-meeting')?.addEventListener('click', () => {
+        SoundFX.playChime();
+        this.showToast('Connecting to virtual recruitment meeting... Microphone & Video Feed Active!', 'success');
+      });
+      document.getElementById('btn-lobby-clear-round')?.addEventListener('click', () => {
+        if (this.selectedInterviewForModal) {
+          const jobId = this.selectedInterviewForModal.jobId;
+          this.store.advanceApplication(jobId);
+          const app = this.store.applied.find(a => a.jobId === jobId);
+          if (app && app.cracked) {
+            SoundFX.playChime();
+            this.celebrateConfetti();
+            this.showToast('🎉 Outstanding! You cleared all technical interview rounds and secured the Offer Letter!', 'success');
+          } else {
+            SoundFX.playPop();
+            this.showToast('Technical interview round passed! Application advanced.', 'success');
+          }
+          this.closeModal();
+          this.renderAll();
+        }
+      });
+
       // Offer Letter Modal & Confetti
       document.getElementById('btn-close-offer-modal')?.addEventListener('click', () => this.closeModal());
-      document.getElementById('btn-fire-confetti')?.addEventListener('click', () => this.celebrateConfetti());
+      document.getElementById('btn-fire-confetti')?.addEventListener('click', () => {
+        SoundFX.playChime();
+        this.celebrateConfetti();
+      });
 
       document.getElementById('btn-accept-offer')?.addEventListener('click', () => {
         if (this.selectedJobForModal) {
           this.store.acceptOffer(this.selectedJobForModal.id);
           this.showToast('Placement Offer Letter Accepted! Congratulations 🎉', 'success');
+          SoundFX.playChime();
           this.celebrateConfetti();
           this.closeModal();
           this.renderAll();
@@ -948,6 +1155,7 @@
     // View Navigation
     // ------------------------------------------------------------------------
     switchView(viewName) {
+      SoundFX.playPop();
       this.currentView = viewName;
 
       // Update sidebar nav items
@@ -1730,11 +1938,16 @@
 
             <div style="display:flex; align-items:center; gap:8px;">
               <span class="badge-pill-info">${intItem.status}</span>
-              <button class="btn btn-sm btn-primary" onclick="alert('Launching ${intItem.platform} meeting link for ${intItem.company} Interview...')">
-                Join Interview
+              <button class="btn btn-sm btn-primary btn-open-lobby" data-id="${intItem.id}">
+                <span>Join Lobby & Practice ⚡</span>
               </button>
             </div>
           `;
+
+          item.querySelector('.btn-open-lobby').addEventListener('click', () => {
+            this.openInterviewLobbyModal(intItem);
+          });
+
           scheduledContainer.appendChild(item);
         });
       }
@@ -2045,25 +2258,307 @@
       const app = this.store.applied.find(a => a.jobId === job.id);
       if (!app || !app.offerDetails) return;
 
+      const student = this.store.student;
       document.getElementById('offer-company-title').textContent = job.company;
-      document.getElementById('offer-student-name').textContent = this.store.student.name;
+      document.getElementById('offer-company-initials').textContent = job.initials;
+      
+      const logoWrap = document.getElementById('offer-company-logo-wrap');
+      if (logoWrap) logoWrap.style.background = job.logoBg;
+
+      const refId = `TPO/2026/OFFER-${job.initials}-${job.id.replace('job-', '88')}`;
+      const refEl = document.getElementById('offer-ref-id');
+      if (refEl) refEl.textContent = refId;
+
+      const dateEl = document.getElementById('offer-date-display');
+      if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+      document.getElementById('offer-student-name').textContent = student.name;
+      const rollEl = document.getElementById('offer-student-roll');
+      if (rollEl) rollEl.textContent = student.rollNo;
+
+      const deptEl = document.getElementById('offer-student-dept');
+      if (deptEl) deptEl.textContent = `${student.department} (Batch ${student.gradYear})`;
+
       document.getElementById('offer-role-title').textContent = job.title;
       document.getElementById('offer-ctc-display').textContent = `₹ ${app.offerDetails.ctc.toFixed(2)} LPA`;
       document.getElementById('offer-base-display').textContent = `₹ ${app.offerDetails.base} LPA`;
       document.getElementById('offer-bonus-display').textContent = `₹ ${app.offerDetails.bonus} LPA`;
       document.getElementById('offer-location-display').textContent = app.offerDetails.location;
 
+      const statusBadge = document.getElementById('offer-status-badge');
+      if (statusBadge) {
+        statusBadge.textContent = app.offerDetails.accepted 
+          ? '✓ Offer Accepted & Digitally Verified' 
+          : '● Offer Issued (Pending Student Acceptance)';
+        statusBadge.style.color = app.offerDetails.accepted ? 'var(--emerald-500)' : 'var(--amber-500)';
+      }
+
+      const signerOrg = document.getElementById('offer-signer-org');
+      if (signerOrg) signerOrg.textContent = `${job.company} Talent Acquisition`;
+
+      const studentSignName = document.getElementById('offer-student-sign-name');
+      if (studentSignName) studentSignName.textContent = student.name;
+
+      const signText = document.getElementById('student-sign-text');
+      if (signText) {
+        signText.textContent = student.name.split(' ').map((n, i) => i === 0 ? n[0] + '.' : n).join(' ');
+      }
+
+      const timestampEl = document.getElementById('offer-sign-timestamp');
+      if (timestampEl) {
+        timestampEl.textContent = app.offerDetails.accepted 
+          ? `Signed: ${app.offerDetails.acceptedDate || '2026-09-24'} (TPO Verified)`
+          : 'Awaiting Digital Signature';
+      }
+
       const btnAccept = document.getElementById('btn-accept-offer');
+      const btnDecline = document.getElementById('btn-decline-offer');
       if (app.offerDetails.accepted) {
-        btnAccept.textContent = '✓ Offer Accepted';
+        btnAccept.textContent = '✓ Offer Accepted & Signed';
         btnAccept.disabled = true;
+        if (btnDecline) btnDecline.style.display = 'none';
       } else {
-        btnAccept.textContent = 'Accept Offer Letter';
+        btnAccept.textContent = 'Accept Placement Offer Letter';
         btnAccept.disabled = false;
+        if (btnDecline) btnDecline.style.display = 'inline-block';
       }
 
       this.offerLetterModal.classList.remove('hidden');
       this.activeModal = this.offerLetterModal;
+    }
+
+    openInterviewLobbyModal(intItem) {
+      this.selectedInterviewForModal = intItem;
+      const job = this.store.jobs.find(j => j.id === intItem.jobId);
+
+      const logoEl = document.getElementById('lobby-company-logo');
+      if (logoEl) {
+        logoEl.textContent = job ? job.initials : intItem.company.substring(0, 2).toUpperCase();
+        if (job) logoEl.style.background = job.logoBg;
+      }
+
+      const titleEl = document.getElementById('lobby-job-title');
+      if (titleEl) titleEl.textContent = `${intItem.company} Interview Lobby`;
+
+      const subEl = document.getElementById('lobby-company-sub');
+      if (subEl) subEl.textContent = `${intItem.company} • ${intItem.role}`;
+
+      const roundEl = document.getElementById('lobby-round-name');
+      if (roundEl) roundEl.textContent = intItem.round;
+
+      const schedEl = document.getElementById('lobby-schedule-info');
+      if (schedEl) {
+        schedEl.innerHTML = `Scheduled: <strong>${intItem.day} ${intItem.month}, ${intItem.time}</strong> • Platform: <strong>${intItem.platform}</strong>`;
+      }
+
+      const intName = intItem.interviewer.split('(')[0].trim();
+      const intTitle = intItem.interviewer.includes('(') 
+        ? intItem.interviewer.split('(')[1].replace(')', '').trim() 
+        : 'Senior Technical Evaluator';
+
+      const interviewerNameEl = document.getElementById('lobby-interviewer-name');
+      if (interviewerNameEl) interviewerNameEl.textContent = intName;
+
+      const interviewerTitleEl = document.getElementById('lobby-interviewer-title');
+      if (interviewerTitleEl) interviewerTitleEl.textContent = `${intTitle} @ ${intItem.company}`;
+
+      const initialsEl = document.getElementById('lobby-interviewer-initials');
+      if (initialsEl) {
+        initialsEl.textContent = intName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+      }
+
+      // Populate curated high-yield questions based on the round
+      const qListEl = document.getElementById('lobby-questions-list');
+      if (qListEl) {
+        if (intItem.company.includes('Amazon') || intItem.company.includes('AWS')) {
+          qListEl.innerHTML = `
+            <div class="prep-question-card">
+              <span class="q-badge">Cloud Systems & Networks</span>
+              <h5>How does AWS VPC Peering differ from AWS Transit Gateway when connecting 10+ VPCs?</h5>
+              <p class="q-answer">VPC peering requires full mesh peering connections (O(N^2) complexity), while Transit Gateway acts as a hub-and-spoke router simplifying route tables and transitive peering.</p>
+            </div>
+            <div class="prep-question-card">
+              <span class="q-badge">High Availability</span>
+              <h5>Explain how Multi-AZ RDS deployment handles automatic failover and RPO/RTO.</h5>
+              <p class="q-answer">Synchronous replication to standby replica in secondary AZ. DNS CNAME automatically updates to standby within 60–120 seconds upon primary node failure.</p>
+            </div>
+          `;
+        } else if (intItem.company.includes('Deloitte')) {
+          qListEl.innerHTML = `
+            <div class="prep-question-card">
+              <span class="q-badge">Data Engineering</span>
+              <h5>How do you design an ETL pipeline for real-time customer analytics using Apache Kafka and Snowflake?</h5>
+              <p class="q-answer">Use Kafka topics for event ingestion, stream processing with Apache Flink or Kafka Streams for windowed aggregations, and Snowpipe for auto-ingestion into Snowflake data warehouse.</p>
+            </div>
+            <div class="prep-question-card">
+              <span class="q-badge">System Case Study</span>
+              <h5>How do you handle schema evolution and data drift in enterprise data lakes?</h5>
+              <p class="q-answer">Utilize Delta Lake or Apache Iceberg with schema enforcement and schema evolution configurations, coupled with Avro or Protobuf schema registries.</p>
+            </div>
+          `;
+        } else {
+          qListEl.innerHTML = `
+            <div class="prep-question-card">
+              <span class="q-badge">DSA & Algorithms</span>
+              <h5>Explain how to detect and resolve cycle in a directed graph using Kahn's Algorithm.</h5>
+              <p class="q-answer">Calculate indegrees for all vertices. Process nodes with 0 indegree in a queue. If total processed vertices < V, the graph contains a cycle.</p>
+            </div>
+            <div class="prep-question-card">
+              <span class="q-badge">System Design</span>
+              <h5>Design an idempotent distributed payment API handling concurrent charge requests.</h5>
+              <p class="q-answer">Use an idempotency key passed in HTTP header, stored with distributed lock (Redis/Redlock) and unique database constraint to prevent duplicate credit/debit charges.</p>
+            </div>
+          `;
+        }
+      }
+
+      this.interviewLobbyModal.classList.remove('hidden');
+      this.activeModal = this.interviewLobbyModal;
+    }
+
+    openPlacementResumeModal() {
+      const student = this.store.student;
+
+      document.getElementById('resume-name').textContent = student.name;
+      document.getElementById('resume-degree').textContent = `B.Tech in ${student.department} • Batch ${student.gradYear}`;
+      document.getElementById('resume-roll').textContent = student.rollNo;
+      document.getElementById('resume-cgpa').textContent = `${student.cgpa.toFixed(1)} / 10.0 (${student.cgpa >= 8.5 ? 'First Class with Distinction' : student.cgpa >= 7.0 ? 'First Class' : 'Second Class'})`;
+      document.getElementById('resume-backlogs').textContent = `${student.backlogs} (${student.backlogs === 0 ? 'Eligible for all Tier-1 Super Dream Drives' : 'Standing Backlogs: ' + student.backlogs})`;
+
+      // Render Cracked Offers
+      const offersListEl = document.getElementById('resume-cracked-list');
+      if (offersListEl) {
+        offersListEl.innerHTML = '';
+        const crackedApps = this.store.applied.filter(a => a.cracked);
+        if (crackedApps.length === 0) {
+          offersListEl.innerHTML = '<p class="text-muted" style="font-size:0.84rem;">Currently actively participating in campus placement evaluation rounds.</p>';
+        } else {
+          crackedApps.forEach(app => {
+            const job = this.store.jobs.find(j => j.id === app.jobId);
+            if (!job) return;
+            const item = document.createElement('div');
+            item.className = 'resume-offer-item';
+            item.innerHTML = `
+              <div>
+                <strong>${job.company}</strong> — ${job.title}
+                <span style="font-size:0.75rem; color:var(--text-dim); display:block;">Location: ${job.location}</span>
+              </div>
+              <div style="text-align:right;">
+                <strong class="text-emerald">₹ ${app.offerDetails.ctc.toFixed(1)} LPA</strong>
+                <span style="font-size:0.72rem; display:block; color:${app.offerDetails.accepted ? '#059669' : '#d97706'}">
+                  ${app.offerDetails.accepted ? '✓ Offer Accepted' : '● Offer Extended'}
+                </span>
+              </div>
+            `;
+            offersListEl.appendChild(item);
+          });
+        }
+      }
+
+      // Render Verified Certifications
+      const certsListEl = document.getElementById('resume-certs-list');
+      if (certsListEl) {
+        certsListEl.innerHTML = '';
+        if (student.certifications.length === 0) {
+          certsListEl.innerHTML = '<p class="text-muted" style="font-size:0.84rem;">No verified certifications attached to placement profile.</p>';
+        } else {
+          student.certifications.forEach(c => {
+            const item = document.createElement('div');
+            item.className = 'resume-cert-item';
+            item.innerHTML = `
+              <div>
+                <strong>${c.title}</strong>
+                <span style="font-size:0.75rem; color:var(--text-dim); display:block;">Issuer: ${c.issuer}</span>
+              </div>
+              <div style="text-align:right;">
+                <span class="badge-mini-green">✓ Verified</span>
+                <span style="font-size:0.72rem; color:var(--text-dim); display:block;">ID: ${c.credId}</span>
+              </div>
+            `;
+            certsListEl.appendChild(item);
+          });
+        }
+      }
+
+      this.placementResumeModal.classList.remove('hidden');
+      this.activeModal = this.placementResumeModal;
+    }
+
+    copyAtsResume() {
+      const student = this.store.student;
+      const crackedApps = this.store.applied.filter(a => a.cracked);
+      const crackedSummary = crackedApps.map(a => {
+        const j = this.store.jobs.find(job => job.id === a.jobId);
+        return j ? `• ${j.company} - ${j.title} (₹ ${a.offerDetails.ctc.toFixed(1)} LPA CTC)` : '';
+      }).filter(Boolean).join('\n');
+
+      const certsSummary = student.certifications.map(c => `• ${c.title} [Issuer: ${c.issuer} | Verification ID: ${c.credId}]`).join('\n');
+
+      const text = `
+UNIVERSITY PLACEMENT VERIFIED CURRICULUM VITAE
+Candidate: ${student.name}
+Roll Number: ${student.rollNo}
+Degree Program: B.Tech in ${student.department} (Batch ${student.gradYear})
+Academic CGPA: ${student.cgpa.toFixed(1)} / 10.0 (Backlogs: ${student.backlogs})
+
+CAMPUS PLACEMENT OFFERS CRACKED:
+${crackedSummary || '• Active Placement Candidate'}
+
+VERIFIED PROFESSIONAL CERTIFICATIONS:
+${certsSummary || '• Standard curriculum credentials'}
+
+TECHNICAL COMPETENCIES:
+• Languages: Java, Python, Go, C++, JavaScript, TypeScript, SQL
+• Cloud & Infrastructure: AWS, Docker, Kubernetes, Linux, Terraform
+• Systems: Distributed Systems, Database Architecture, System Design
+      `.trim();
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          this.showToast('Placement CV plain-text copied to clipboard for ATS portals! 📋', 'success');
+        }).catch(() => {
+          this.showToast('Failed to copy to clipboard.', 'warning');
+        });
+      } else {
+        this.showToast('Clipboard API not supported on this browser.', 'warning');
+      }
+    }
+
+    switchStudentPersona(personaKey) {
+      const persona = STUDENT_PERSONAS[personaKey];
+      if (!persona) return;
+
+      document.getElementById('input-student-name').value = persona.name;
+      document.getElementById('input-roll-no').value = persona.rollNo;
+      document.getElementById('input-department').value = persona.department;
+      document.getElementById('input-grad-year').value = persona.gradYear;
+      document.getElementById('input-cgpa').value = persona.cgpa;
+      document.getElementById('cgpa-val-preview').textContent = persona.cgpa.toFixed(1);
+      document.getElementById('input-backlogs').value = String(persona.backlogs);
+
+      // Update checkboxes in profile modal
+      const checkboxes = document.querySelectorAll('input[name="student_certs"]');
+      checkboxes.forEach(cb => {
+        cb.checked = persona.certs.includes(cb.value);
+      });
+
+      // Update active styling on pills
+      document.querySelectorAll('.persona-pill').forEach(p => p.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-persona-${personaKey}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      SoundFX.playPop();
+      this.showToast(`Switched form to persona: ${persona.name} (${persona.cgpa} CGPA, ${persona.department})`, 'info');
+    }
+
+    resetDemoData() {
+      if (confirm('Reset PlaceNexus to original demo state? All student profile edits and custom jobs will be reset to default.')) {
+        this.store.resetToDefaults();
+        SoundFX.playChime();
+        this.celebrateConfetti();
+        this.showToast('PlaceNexus demo data restored to pristine initial state! ✨', 'success');
+        this.renderAll();
+      }
     }
 
     handleApplyJob(jobId) {

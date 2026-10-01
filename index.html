@@ -90,6 +90,11 @@
         </button>
 
         <span class="nav-section-label">ADMIN & TOOLS</span>
+        <button class="nav-item" id="btn-view-resume-nav">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Placement CV / ATS</span>
+        </button>
+
         <button class="nav-item" id="btn-post-job-nav">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
           <span>Post New Job (TPO)</span>
@@ -98,6 +103,11 @@
         <button class="nav-item" id="btn-quick-eligibility">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           <span>Eligibility Breakdown</span>
+        </button>
+
+        <button class="nav-item text-danger-nav" id="btn-reset-demo-nav" title="Reset all state to initial demo defaults">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L2 8"/><path d="M2 3v5h5"/></svg>
+          <span>Reset Demo Data</span>
         </button>
       </nav>
 
@@ -141,10 +151,22 @@
             <span class="pill-text"><strong id="summary-eligible-count">0</strong> Jobs Eligible</span>
           </div>
 
+          <!-- Placement Resume CV Button -->
+          <button class="btn btn-secondary" id="btn-header-resume" title="View & Print Verified Placement CV">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Placement CV</span>
+          </button>
+
+          <!-- Audio FX Toggle Button -->
+          <button class="btn-icon-toggle" id="btn-toggle-sound" title="Toggle Sound Celebrations & Audio Chimes">
+            <svg id="sound-icon-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            <svg id="sound-icon-off" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          </button>
+
           <!-- Edit Profile Shortcut Button -->
           <button class="btn btn-secondary" id="btn-header-profile">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>My Placement Profile</span>
+            <span>My Profile</span>
           </button>
 
           <!-- Post Job Button -->
@@ -696,6 +718,22 @@
       </div>
 
       <form id="form-edit-profile" class="modal-body">
+        <!-- Quick Preset Personas -->
+        <div class="preset-personas-box">
+          <span class="preset-label">Quick Switch Demo Student Persona:</span>
+          <div class="persona-pills">
+            <button type="button" class="persona-pill active" id="btn-persona-alex">
+              <strong>Alexandria Chen</strong> (8.8 CGPA • 4 Certs • Top Tier)
+            </button>
+            <button type="button" class="persona-pill" id="btn-persona-rohan">
+              <strong>Rohan Verma</strong> (7.2 CGPA • 1 Cert • DevOps)
+            </button>
+            <button type="button" class="persona-pill" id="btn-persona-maya">
+              <strong>Maya Patel</strong> (6.4 CGPA • 1 Backlog • Core)
+            </button>
+          </div>
+        </div>
+
         <div class="form-row">
           <div class="form-group flex-1">
             <label for="input-student-name">Full Name</label>
@@ -774,6 +812,7 @@
         </div>
 
         <div class="modal-footer">
+          <button type="button" class="btn btn-outline-danger" id="btn-reset-profile">Reset Profile</button>
           <button type="button" class="btn btn-secondary" id="btn-cancel-profile">Cancel</button>
           <button type="submit" class="btn btn-primary">Save Profile & Recalculate</button>
         </div>
@@ -892,55 +931,359 @@
     </div>
   </div>
 
-  <!-- MODAL 5: OFFER LETTER CELEBRATION MODAL -->
+  <!-- MODAL 5: OFFICIAL VERIFIED OFFER LETTER MODAL (PRINTABLE) -->
   <div class="modal-overlay hidden" id="offer-letter-modal">
-    <div class="modal-card modal-md offer-modal-glow">
-      <div class="offer-letter-card">
-        <div class="offer-header">
-          <div class="offer-seal">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+    <div class="modal-card modal-lg offer-modal-glow">
+      <div class="modal-actions-top-bar no-print">
+        <button class="btn btn-sm btn-secondary" id="btn-print-offer" title="Print or Save Official Offer Letter as PDF">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span>Print / Save PDF</span>
+        </button>
+        <button class="modal-close-btn" id="btn-close-offer-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="official-letterhead-document" id="printable-offer-document">
+        <!-- University & Corporate Joint Header -->
+        <div class="letterhead-header">
+          <div class="letterhead-brand">
+            <div class="letterhead-logo">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div>
+              <span class="uni-name">UNIVERSITY TRAINING & PLACEMENT CELL</span>
+              <span class="office-name">Directorate of Corporate Relations & Campus Recruitment</span>
+            </div>
           </div>
-          <div>
-            <span class="offer-tagline">OFFICIAL PLACEMENT OFFER</span>
-            <h3 class="offer-company-title" id="offer-company-title">Microsoft India</h3>
+          <div class="letterhead-meta">
+            <span class="ref-num">REF: <strong id="offer-ref-id">TPO/2026/OFFER-8842</strong></span>
+            <span class="issue-date">Date: <strong id="offer-date-display">October 01, 2026</strong></span>
           </div>
-          <button class="modal-close-btn" id="btn-close-offer-modal">&times;</button>
         </div>
 
-        <div class="offer-body">
-          <p class="offer-salutation">Dear <strong id="offer-student-name">Alexandria Chen</strong>,</p>
-          <p class="offer-text">
-            On behalf of the campus selection committee, we are delighted to offer you the position of
-            <strong id="offer-role-title">Software Engineer - Cloud Systems</strong>. You have demonstrated exemplary technical problem-solving, architectural reasoning, and certified skills throughout all interview rounds!
+        <div class="letterhead-divider"></div>
+
+        <!-- Corporate Offer Presentation -->
+        <div class="offer-seal-header">
+          <div class="corporate-badge" id="offer-company-logo-wrap">
+            <span class="company-logo-text" id="offer-company-initials">MS</span>
+          </div>
+          <div class="offer-subject-group">
+            <span class="formal-subject-tag">OFFICIAL PLACEMENT OFFER LETTER</span>
+            <h2 class="corporate-company-name" id="offer-company-title">Microsoft India Development Center</h2>
+            <p class="corporate-sub">Campus Placement Drive 2025–2026 • Verified Selection</p>
+          </div>
+          <div class="verified-seal-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            <span>TPO VERIFIED</span>
+          </div>
+        </div>
+
+        <div class="letter-body-content">
+          <p class="formal-salutation">Dear <strong id="offer-student-name">Alexandria Chen</strong> (Roll No: <span id="offer-student-roll">22CS1048</span>, <span id="offer-student-dept">B.Tech Computer Science</span>),</p>
+          <p class="formal-p">
+            On behalf of the Campus Selection Board and recruitment leadership, we are delighted to offer you employment for the position of
+            <strong id="offer-role-title" class="text-primary-emphasis">Software Development Engineer - Cloud & AI</strong>.
+            Throughout our technical assessments, architecture rounds, and interview evaluations, your demonstrated technical depth, certified competencies, and problem-solving skills scored in the top percentile of campus candidates.
           </p>
 
-          <div class="offer-breakdown-card">
-            <div class="offer-row">
-              <span>Annual CTC Package:</span>
-              <strong class="text-emerald text-lg" id="offer-ctc-display">₹ 28.50 LPA</strong>
+          <!-- Structured Compensation Breakdown Table -->
+          <div class="compensation-table-wrap">
+            <h4 class="comp-table-title">Annual Compensation & Benefits Breakdown (CTC)</h4>
+            <table class="compensation-table">
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th>Description</th>
+                  <th style="text-align: right;">Amount (INR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Base Annual Salary</strong></td>
+                  <td>Fixed monthly compensation component</td>
+                  <td style="text-align: right;"><strong id="offer-base-display">₹ 18.00 LPA</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Performance & Joining Bonus</strong></td>
+                  <td>First year signing bonus & milestone incentives</td>
+                  <td style="text-align: right;"><strong id="offer-bonus-display">₹ 5.50 LPA</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Relocation & Tech Allowance</strong></td>
+                  <td>Workstation, wellness and relocation reimbursement</td>
+                  <td style="text-align: right;"><strong>₹ 5.00 LPA</strong></td>
+                </tr>
+                <tr class="total-row">
+                  <td><strong>TOTAL ANNUAL COST TO COMPANY (CTC)</strong></td>
+                  <td>Guaranteed first-year compensation package</td>
+                  <td style="text-align: right;"><strong class="text-emerald text-lg" id="offer-ctc-display">₹ 28.50 LPA</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="offer-terms-grid">
+            <div class="term-item">
+              <span class="term-lbl">Primary Work Location:</span>
+              <strong id="offer-location-display">Bengaluru / Hyderabad (Hybrid)</strong>
             </div>
-            <div class="offer-row">
-              <span>Base Salary Component:</span>
-              <strong id="offer-base-display">₹ 18.00 LPA</strong>
+            <div class="term-item">
+              <span class="term-lbl">Date of Joining:</span>
+              <strong>July 06, 2026 (Post Degree Completion)</strong>
             </div>
-            <div class="offer-row">
-              <span>Joining & Retention Bonus:</span>
-              <strong id="offer-bonus-display">₹ 5.00 LPA</strong>
+            <div class="term-item">
+              <span class="term-lbl">Probation Period:</span>
+              <strong>6 Months Standard Evaluation</strong>
             </div>
-            <div class="offer-row">
-              <span>Work Location:</span>
-              <span id="offer-location-display">Bengaluru / Hyderabad (Hybrid)</span>
+            <div class="term-item">
+              <span class="term-lbl">Acceptance Status:</span>
+              <strong id="offer-status-badge" class="text-emerald">Offer Issued</strong>
             </div>
           </div>
 
-          <div class="offer-decision-actions" id="offer-actions-wrap">
-            <button class="btn btn-success flex-1" id="btn-accept-offer">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Accept Offer Letter</span>
-            </button>
-            <button class="btn btn-outline-danger" id="btn-decline-offer">Decline</button>
+          <!-- Signatures Block -->
+          <div class="signatures-block">
+            <div class="sign-item">
+              <div class="signature-line digital-sign">
+                <span>Dr. K. S. Ramanathan</span>
+              </div>
+              <p class="sign-name">Dr. K. S. Ramanathan, Ph.D.</p>
+              <p class="sign-title">Dean, Training & Placement Cell</p>
+              <p class="sign-org">University Central Career Council</p>
+            </div>
+            <div class="sign-item">
+              <div class="signature-line corporate-sign">
+                <span id="offer-corp-signer">Sunil Narang</span>
+              </div>
+              <p class="sign-name" id="offer-signer-name">Sunil Narang</p>
+              <p class="sign-title">Head of University Talent Acquisition</p>
+              <p class="sign-org" id="offer-signer-org">Microsoft India Pvt. Ltd.</p>
+            </div>
+            <div class="sign-item">
+              <div class="signature-line student-sign" id="student-signature-box">
+                <span id="student-sign-text">A. Chen</span>
+              </div>
+              <p class="sign-name" id="offer-student-sign-name">Alexandria Chen</p>
+              <p class="sign-title">Candidate Signature</p>
+              <p class="sign-org" id="offer-sign-timestamp">Verified Digital Acknowledgment</p>
+            </div>
           </div>
         </div>
+
+        <div class="letter-footer-note">
+          <p>This placement offer is officially certified by the University Training & Placement Cell (TPO). Verify at placenexus.university.edu/verify?ref=TPO-2026-8842.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer no-print" id="offer-actions-wrap">
+        <button class="btn btn-outline-danger" id="btn-decline-offer">Decline Offer</button>
+        <button class="btn btn-secondary" id="btn-modal-close-offer">Close</button>
+        <button class="btn btn-success flex-1" id="btn-accept-offer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Accept Placement Offer Letter</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 6: VIRTUAL INTERVIEW ROOM & PREPARATION LOBBY -->
+  <div class="modal-overlay hidden" id="interview-lobby-modal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-company-info">
+          <div class="company-logo-modal" id="lobby-company-logo">AM</div>
+          <div>
+            <h3 class="modal-title" id="lobby-job-title">Technical Deep Dive Interview</h3>
+            <p class="modal-subtitle" id="lobby-company-sub">Amazon Web Services • Cloud Support Associate</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btn-close-lobby-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Live Meeting Card -->
+        <div class="interview-lobby-meeting-card">
+          <div class="meeting-card-left">
+            <span class="live-pulse-dot"></span>
+            <div>
+              <span class="meeting-tag">OFFICIAL CAMPUS RECRUITMENT INTERVIEW</span>
+              <h4 id="lobby-round-name">Round 2: Systems, VPC Networks & Cloud Architecture</h4>
+              <p id="lobby-schedule-info">Scheduled: <strong>Today, 03:00 PM IST</strong> • Via <strong>Amazon Chime</strong></p>
+            </div>
+          </div>
+          <div class="meeting-card-right">
+            <div class="interviewer-avatar-box">
+              <span id="lobby-interviewer-initials">RS</span>
+            </div>
+            <div>
+              <span class="interviewer-label">Assigned Interviewer:</span>
+              <strong id="lobby-interviewer-name">Raghav Sharma</strong>
+              <p class="interviewer-sub" id="lobby-interviewer-title">Senior Cloud Architect @ AWS</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hardware & System Readiness Checklist -->
+        <div class="readiness-checklist-box">
+          <h4 class="section-heading">Pre-Interview System & Equipment Check</h4>
+          <div class="checklist-grid">
+            <div class="check-item checked">
+              <span class="check-icon">✓</span>
+              <div>
+                <strong>HD Camera & Video</strong>
+                <p>1080p Video Feed Connected</p>
+              </div>
+            </div>
+            <div class="check-item checked">
+              <span class="check-icon">✓</span>
+              <div>
+                <strong>Microphone & Audio</strong>
+                <p>Noise-canceling input active</p>
+              </div>
+            </div>
+            <div class="check-item checked">
+              <span class="check-icon">✓</span>
+              <div>
+                <strong>Live Code Editor</strong>
+                <p>Collaborative IDE synced</p>
+              </div>
+            </div>
+            <div class="check-item checked">
+              <span class="check-icon">✓</span>
+              <div>
+                <strong>Verified Credentials</strong>
+                <p>AWS & DevOps certs on file</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Curated Prep Questions & Cheat Sheet for this round -->
+        <div class="modal-section">
+          <h4 class="section-heading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>High-Yield Technical Questions Demanded in This Round</span>
+          </h4>
+          <div class="interview-questions-list" id="lobby-questions-list">
+            <div class="prep-question-card">
+              <span class="q-badge">Networking & VPC</span>
+              <h5>How does AWS VPC Peering differ from AWS Transit Gateway when connecting 10+ VPCs?</h5>
+              <p class="q-answer">VPC peering requires full mesh peering connections (O(N^2) complexity), while Transit Gateway acts as a hub-and-spoke router simplifying route tables and transitive peering.</p>
+            </div>
+            <div class="prep-question-card">
+              <span class="q-badge">High Availability</span>
+              <h5>Explain how Multi-AZ RDS deployment handles automatic failover and RPO/RTO.</h5>
+              <p class="q-answer">Synchronous replication to standby replica in secondary AZ. DNS CNAME automatically updates to standby within 60–120 seconds upon primary node failure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-close-lobby">Close Lobby</button>
+        <button class="btn btn-outline-success" id="btn-lobby-clear-round">
+          <span>Simulate Passing Round & Advance ⚡</span>
+        </button>
+        <button class="btn btn-primary" id="btn-lobby-join-meeting">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Launch Virtual Meeting Room</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 7: VERIFIED PLACEMENT RESUME & ATS PROFILE MODAL (PRINTABLE) -->
+  <div class="modal-overlay hidden" id="placement-resume-modal">
+    <div class="modal-card modal-lg">
+      <div class="modal-actions-top-bar no-print">
+        <button class="btn btn-sm btn-secondary" id="btn-print-resume" title="Print or Save Resume as PDF">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span>Print / Export PDF</span>
+        </button>
+        <button class="btn btn-sm btn-outline" id="btn-copy-ats" title="Copy ATS plain text resume to clipboard">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span>Copy ATS Text</span>
+        </button>
+        <button class="modal-close-btn" id="btn-close-resume-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="resume-document-sheet" id="printable-resume-sheet">
+        <!-- Resume Header -->
+        <div class="resume-header">
+          <div class="resume-name-block">
+            <h2 class="resume-student-name" id="resume-name">Alexandria Chen</h2>
+            <p class="resume-target-role">B.Tech Computer Science & Engineering • Final Year (Batch 2026)</p>
+          </div>
+          <div class="resume-contact-block">
+            <span>alexandria.chen@university.edu</span>
+            <span>+91 98765 43210 • Bengaluru, India</span>
+            <span>linkedin.com/in/alexandriachen • github.com/alexandriachen</span>
+          </div>
+        </div>
+
+        <div class="resume-divider"></div>
+
+        <!-- Academic Credentials Strip -->
+        <div class="resume-section">
+          <h4 class="resume-section-title">ACADEMIC STANDING & UNIVERSITY RECORD</h4>
+          <div class="resume-academic-grid">
+            <div class="resume-acad-item">
+              <span class="acad-lbl">Degree & Program:</span>
+              <strong id="resume-degree">B.Tech in Computer Science & Engineering (CSE)</strong>
+            </div>
+            <div class="resume-acad-item">
+              <span class="acad-lbl">University Roll No:</span>
+              <strong id="resume-roll">22CS1048</strong>
+            </div>
+            <div class="resume-acad-item">
+              <span class="acad-lbl">Cumulative CGPA:</span>
+              <strong class="text-emerald" id="resume-cgpa">8.8 / 10.0 (First Class with Distinction)</strong>
+            </div>
+            <div class="resume-acad-item">
+              <span class="acad-lbl">Standing Backlogs:</span>
+              <strong id="resume-backlogs">0 (Eligible for all Tier-1 Super Dream Drives)</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campus Placement Success & Cracked Offers -->
+        <div class="resume-section">
+          <h4 class="resume-section-title">CAMPUS RECRUITMENT OFFERS CRACKED (2025–2026)</h4>
+          <div class="resume-offers-list" id="resume-cracked-list">
+            <!-- Dynamic cracked offers rendered here -->
+          </div>
+        </div>
+
+        <!-- Verified Industry Certifications -->
+        <div class="resume-section">
+          <h4 class="resume-section-title">VERIFIED INDUSTRY CERTIFICATIONS</h4>
+          <div class="resume-certs-list" id="resume-certs-list">
+            <!-- Dynamic certs list rendered here -->
+          </div>
+        </div>
+
+        <!-- Core Competencies & Technical Skills -->
+        <div class="resume-section">
+          <h4 class="resume-section-title">TECHNICAL EXPERTISE & SKILLS</h4>
+          <div class="resume-skills-block">
+            <p><strong>Languages:</strong> Java, Python, Go, C++, JavaScript (ES6+), TypeScript, SQL</p>
+            <p><strong>Cloud & Infrastructure:</strong> AWS (VPC, EC2, Lambda, S3, RDS), Docker, Kubernetes, Terraform, Linux</p>
+            <p><strong>Web & Frameworks:</strong> React, Node.js, Express, Spring Boot, REST APIs, GraphQL</p>
+            <p><strong>Core Computer Science:</strong> Data Structures & Algorithms, Distributed Systems, Database Management (PostgreSQL, MongoDB), System Design</p>
+          </div>
+        </div>
+
+        <div class="resume-footer-stamp">
+          <span>✓ Digitally verified by University Career & Placement Cell (TPO) • Academic Year 2025-2026</span>
+        </div>
+      </div>
+
+      <div class="modal-footer no-print">
+        <button class="btn btn-secondary" id="btn-close-resume">Close</button>
+        <button class="btn btn-primary" id="btn-print-resume-footer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span>Print Placement CV (PDF)</span>
+        </button>
       </div>
     </div>
   </div>
