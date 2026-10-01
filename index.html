@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NextGen Student Placement Portal - Explore available jobs, check real-time eligibility, manage required certifications, track applications, and celebrate cracked interviews.">
+  <title>PlaceNexus | Modern Student Placement & Career Portal</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Canvas Confetti for celebrating cracked interviews -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="theme-light">
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">Place<span class="gradient-text">Nexus</span></span>
+            <span class="brand-sub">University Placement Portal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Student Snapshot in Sidebar -->
+      <div class="student-mini-card" id="student-mini-card">
+        <div class="student-avatar-wrap">
+          <div class="avatar-ring">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" alt="Student Profile" class="avatar-img" id="sidebar-avatar">
+          </div>
+          <span class="status-indicator online" title="Eligible for Placement Drives"></span>
+        </div>
+        <div class="student-info">
+          <h4 class="student-name" id="sidebar-student-name">Alexandria Chen</h4>
+          <p class="student-meta" id="sidebar-student-meta">B.Tech CSE • 2026 Batch</p>
+          <div class="badge-row">
+            <span class="stat-pill" title="Current CGPA"><span class="pill-dot emerald"></span> <strong id="sidebar-cgpa">8.8</strong> CGPA</span>
+            <span class="stat-pill" title="Verified Certifications"><span class="pill-dot violet"></span> <strong id="sidebar-cert-count">4</strong> Certs</span>
+          </div>
+        </div>
+        <button class="btn-ghost-edit" id="btn-open-profile" title="Edit Student Profile & Criteria">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <span class="nav-section-label">PORTAL VIEWS</span>
+        <button class="nav-item active" data-view="jobs">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span>Available Jobs</span>
+          <span class="nav-badge count-badge" id="nav-badge-jobs">0</span>
+        </button>
+
+        <button class="nav-item" data-view="applied">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Applied Jobs</span>
+          <span class="nav-badge" id="nav-badge-applied">0</span>
+        </button>
+
+        <button class="nav-item highlight-item" data-view="interviews">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Interviews & Cracked</span>
+          <span class="nav-badge cracked-badge" id="nav-badge-cracked">0 Offers</span>
+        </button>
+
+        <button class="nav-item" data-view="certifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          <span>Certifications Hub</span>
+          <span class="nav-badge" id="nav-badge-certs">0</span>
+        </button>
+
+        <span class="nav-section-label">ADMIN & TOOLS</span>
+        <button class="nav-item" id="btn-post-job-nav">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span>Post New Job (TPO)</span>
+        </button>
+
+        <button class="nav-item" id="btn-quick-eligibility">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Eligibility Breakdown</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="portal-mode-toggle">
+          <span class="mode-label">Appearance</span>
+          <button class="btn-theme-toggle" id="btn-theme-toggle" title="Toggle Light / Dark Mode">
+            <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            <svg id="theme-icon-sun" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          </button>
+        </div>
+        <div class="session-info">
+          <span>Drive: <strong>Batch 2025-2026</strong></span>
+          <span class="portal-status-online">● Live Campus Drive</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      
+      <!-- Top Header Bar -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title" id="page-title">Available Campus Jobs</h1>
+            <p class="page-subtitle" id="page-subtitle">Browse campus recruitment drives, verify job eligibility & certification requirements</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Live Eligibility Summary Badge -->
+          <div class="eligibility-pill-badge" id="header-eligibility-summary">
+            <span class="icon-wrap">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="pill-text"><strong id="summary-eligible-count">0</strong> Jobs Eligible</span>
+          </div>
+
+          <!-- Edit Profile Shortcut Button -->
+          <button class="btn btn-secondary" id="btn-header-profile">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>My Placement Profile</span>
+          </button>
+
+          <!-- Post Job Button -->
+          <button class="btn btn-primary" id="btn-header-add-job">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add Job Opening</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Key Performance Indicators & Placement Summary Strip -->
+      <section class="metrics-banner" aria-label="Placement Overview Metrics">
+        <div class="metric-card metric-primary">
+          <div class="metric-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Total Jobs Available</span>
+            <div class="metric-value-row">
+              <span class="metric-number" id="kpi-total-jobs">0</span>
+              <span class="metric-sub" id="kpi-active-companies">from 8 Companies</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-emerald">
+          <div class="metric-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Jobs You Qualify For</span>
+            <div class="metric-value-row">
+              <span class="metric-number" id="kpi-eligible-jobs">0</span>
+              <span class="metric-tag eligible-tag" id="kpi-eligibility-rate">85% Match</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-blue">
+          <div class="metric-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Jobs Applied By You</span>
+            <div class="metric-value-row">
+              <span class="metric-number" id="kpi-applied-jobs">0</span>
+              <span class="metric-sub" id="kpi-in-review">Active Process</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-gold highlight-glow">
+          <div class="metric-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          </div>
+          <div class="metric-content">
+            <span class="metric-label">Interviews Cracked 🎉</span>
+            <div class="metric-value-row">
+              <span class="metric-number text-gold" id="kpi-cracked-offers">0</span>
+              <span class="metric-tag offer-tag" id="kpi-highest-package">₹ 0 LPA</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 1: AVAILABLE JOBS BOARD -->
+      <section class="portal-view active" id="view-jobs">
+        
+        <!-- Filters & Search Toolbar -->
+        <div class="search-filter-card">
+          <div class="search-input-group">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="job-search-input" placeholder="Search by role title, company (Google, Microsoft...), tech skills or keywords..." autocomplete="off">
+            <button class="clear-search-btn hidden" id="btn-clear-search" title="Clear Search">&times;</button>
+          </div>
+
+          <div class="filter-controls-row">
+            <div class="filter-item">
+              <label for="filter-category">Domain</label>
+              <select id="filter-category" class="custom-select">
+                <option value="all">All Domains</option>
+                <option value="Software Engineering">Software Engineering</option>
+                <option value="Cloud & DevOps">Cloud & DevOps</option>
+                <option value="Data & AI">Data & AI</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="Fullstack & Web">Fullstack & Web</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="filter-package">Min CTC Package</label>
+              <select id="filter-package" class="custom-select">
+                <option value="0">Any Package</option>
+                <option value="10">₹ 10+ LPA</option>
+                <option value="15">₹ 15+ LPA</option>
+                <option value="20">₹ 20+ LPA</option>
+                <option value="30">₹ 30+ LPA</option>
+              </select>
+            </div>
+
+            <div class="filter-item">
+              <label for="filter-sort">Sort By</label>
+              <select id="filter-sort" class="custom-select">
+                <option value="deadline">Application Deadline (Urgent first)</option>
+                <option value="package-desc">CTC Package: High to Low</option>
+                <option value="package-asc">CTC Package: Low to High</option>
+                <option value="match">Best Eligibility Match</option>
+              </select>
+            </div>
+
+            <div class="filter-item checkbox-filter-item">
+              <label class="toggle-switch-label" for="toggle-eligible-only">
+                <input type="checkbox" id="toggle-eligible-only" class="toggle-input">
+                <span class="toggle-slider"></span>
+                <span class="toggle-text">Show Eligible Only <span class="badge-mini-green">Auto-filter</span></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Active Filter Tags Row -->
+          <div class="active-filter-tags" id="active-filter-tags">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Student Dynamic Eligibility Snapshot Banner -->
+        <div class="student-criteria-callout" id="criteria-banner">
+          <div class="callout-left">
+            <div class="criteria-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
+            <div class="criteria-details">
+              <strong>Your Eligibility Profile:</strong>
+              <span>CGPA: <span class="highlight-val" id="banner-cgpa">8.8/10</span> | Branch: <span class="highlight-val" id="banner-branch">CSE</span> | Backlogs: <span class="highlight-val" id="banner-backlogs">0</span> | Verified Certifications: <span class="highlight-val" id="banner-certs">4 Verified</span></span>
+            </div>
+          </div>
+          <div class="callout-right">
+            <button class="btn btn-sm btn-outline" id="btn-adjust-profile-banner">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>Adjust My Profile / CGPA</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Job Cards Grid / Columns Container -->
+        <div class="jobs-grid-header">
+          <div class="title-with-views">
+            <h2 class="section-title">Open Campus Opportunities (<span id="jobs-count-display">0</span>)</h2>
+            <div class="layout-toggle-pill">
+              <button class="layout-btn active" id="btn-layout-columns" title="View in 3 Coloured Status Columns">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="18" rx="1"/><rect x="17" y="3" width="5" height="18" rx="1"/></svg>
+                <span>Coloured Columns</span>
+              </button>
+              <button class="layout-btn" id="btn-layout-grid" title="Standard Grid View">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                <span>Grid View</span>
+              </button>
+            </div>
+          </div>
+          <div class="legend-pills">
+            <span class="legend-item"><span class="legend-dot green"></span> Eligible</span>
+            <span class="legend-item"><span class="legend-dot amber"></span> Missing Certifications</span>
+            <span class="legend-item"><span class="legend-dot red"></span> CGPA / Criteria Ineligible</span>
+            <span class="legend-item"><span class="legend-dot blue"></span> Applied</span>
+          </div>
+        </div>
+
+        <!-- 3 Coloured Status Columns Container for Jobs -->
+        <div class="jobs-columns-board" id="jobs-columns-container">
+          <!-- Col 1: Emerald / Green Coloured Column -->
+          <div class="portal-column col-emerald">
+            <div class="portal-col-header">
+              <div class="portal-col-title-wrap">
+                <span class="col-dot-glow emerald"></span>
+                <div>
+                  <h3 class="portal-col-title">Eligible to Apply</h3>
+                  <p class="portal-col-sub">100% CGPA, Branch & Certs Matched</p>
+                </div>
+              </div>
+              <span class="portal-col-count" id="count-col-eligible">0</span>
+            </div>
+            <div class="portal-col-cards" id="cards-col-eligible"></div>
+          </div>
+
+          <!-- Col 2: Amber / Yellow Coloured Column -->
+          <div class="portal-column col-amber">
+            <div class="portal-col-header">
+              <div class="portal-col-title-wrap">
+                <span class="col-dot-glow amber"></span>
+                <div>
+                  <h3 class="portal-col-title">Action Needed: Missing Certs</h3>
+                  <p class="portal-col-sub">Add Certifications to Unlock</p>
+                </div>
+              </div>
+              <span class="portal-col-count" id="count-col-partial">0</span>
+            </div>
+            <div class="portal-col-cards" id="cards-col-partial"></div>
+          </div>
+
+          <!-- Col 3: Rose / Red Coloured Column -->
+          <div class="portal-column col-rose">
+            <div class="portal-col-header">
+              <div class="portal-col-title-wrap">
+                <span class="col-dot-glow rose"></span>
+                <div>
+                  <h3 class="portal-col-title">Criteria Ineligible</h3>
+                  <p class="portal-col-sub">CGPA, Backlogs or Branch Restricted</p>
+                </div>
+              </div>
+              <span class="portal-col-count" id="count-col-ineligible">0</span>
+            </div>
+            <div class="portal-col-cards" id="cards-col-ineligible"></div>
+          </div>
+        </div>
+
+        <!-- Standard Grid Container for Jobs (Optional toggle) -->
+        <div class="jobs-cards-grid hidden" id="jobs-cards-container">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div class="empty-state-card hidden" id="jobs-empty-state">
+          <div class="empty-icon-box">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+          </div>
+          <h3>No Matching Jobs Found</h3>
+          <p>Try adjusting your search keywords, lowering the CTC filter, or disabling the "Show Eligible Only" toggle.</p>
+          <button class="btn btn-secondary" id="btn-reset-filters">Reset All Filters</button>
+        </div>
+      </section>
+
+      <!-- VIEW 2: APPLIED JOBS TRACKER -->
+      <section class="portal-view hidden" id="view-applied">
+        <div class="view-header-bar">
+          <div>
+            <h2 class="section-title">My Job Applications</h2>
+            <p class="section-desc">Track real-time progress, scheduled interview rounds, screening updates, and feedback.</p>
+          </div>
+          <div class="applied-header-right">
+            <div class="layout-toggle-pill">
+              <button class="layout-btn active" id="btn-applied-kanban">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="18" rx="1"/><rect x="17" y="3" width="5" height="18" rx="1"/></svg>
+                <span>Coloured Columns</span>
+              </button>
+              <button class="layout-btn" id="btn-applied-stepper">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                <span>Pipeline List</span>
+              </button>
+            </div>
+            <div class="applied-filter-tabs">
+              <button class="tab-btn active" data-status-filter="all">All (<span id="applied-tab-all">0</span>)</button>
+              <button class="tab-btn" data-status-filter="Screening">Screening (<span id="applied-tab-screening">0</span>)</button>
+              <button class="tab-btn" data-status-filter="Interview">Interview Rounds (<span id="applied-tab-interview">0</span>)</button>
+              <button class="tab-btn" data-status-filter="Cracked">Cracked / Offered 🎉 (<span id="applied-tab-cracked">0</span>)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Coloured Kanban Columns for Applied Jobs -->
+        <div class="applied-kanban-board" id="applied-kanban-container">
+          <!-- Column 1: Sky Blue Coloured Column -->
+          <div class="portal-column col-blue">
+            <div class="portal-col-header">
+              <div class="portal-col-title-wrap">
+                <span class="col-dot-glow blue"></span>
+                <div>
+                  <h3 class="portal-col-title">1. Application & Screening</h3>
+                  <p class="portal-col-sub">Resume verification & assessments</p>
+                </div>
+              </div>
+              <span class="portal-col-count" id="count-kanban-screening">0</span>
+            </div>
+            <div class="portal-col-cards" id="cards-kanban-screening"></div>
+          </div>
+
+          <!-- Column 2: Royal Violet Coloured Column -->
+          <div class="portal-column col-purple">
+            <div class="portal-col-header">
+              <div class="portal-col-title-wrap">
+                <span class="col-dot-glow purple"></span>
+                <div>
+                  <h3 class="portal-col-title">2. Interview Rounds Active</h3>
+                  <p class="portal-col-sub">DSA, System Design & Technical deep-dives</p>
+                </div>
+              </div>
+              <span class="portal-col-count" id="count-kanban-interview">0</span>
+            </div>
+            <div class="portal-col-cards" id="cards-kanban-interview"></div>
+          </div>
+
+          <!-- Column 3: Gold / Emerald Coloured Column -->
+          <div class="portal-column col-gold">
+            <div class="portal-col-header">
+              <div class="portal-col-title-wrap">
+                <span class="col-dot-glow gold"></span>
+                <div>
+                  <h3 class="portal-col-title">3. Offers Cracked 🎉</h3>
+                  <p class="portal-col-sub">Selected candidates & official offers</p>
+                </div>
+              </div>
+              <span class="portal-col-count" id="count-kanban-cracked">0</span>
+            </div>
+            <div class="portal-col-cards" id="cards-kanban-cracked"></div>
+          </div>
+        </div>
+
+        <!-- Application Cards List (Timeline view) -->
+        <div class="applied-cards-container hidden" id="applied-cards-container">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Applied Empty State -->
+        <div class="empty-state-card hidden" id="applied-empty-state">
+          <div class="empty-icon-box">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <h3>No Applications Submitted Yet</h3>
+          <p>You haven't applied to any campus drive yet. Explore available jobs and apply to roles you are eligible for!</p>
+          <button class="btn btn-primary" id="btn-goto-jobs">Browse Available Jobs</button>
+        </div>
+      </section>
+
+      <!-- VIEW 3: INTERVIEWS & CRACKED OFFERS SHOWCASE -->
+      <section class="portal-view hidden" id="view-interviews">
+        
+        <!-- Trophy Celebration Showcase -->
+        <div class="cracked-hero-banner">
+          <div class="banner-sparkle-bg"></div>
+          <div class="cracked-hero-content">
+            <div class="trophy-badge-icon">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            </div>
+            <div>
+              <div class="hero-tag">PLACEMENT SUCCESS RECORD</div>
+              <h2 class="hero-title">Campus Placement Offers Cracked!</h2>
+              <p class="hero-desc">Congratulations on passing rigorous coding evaluations, system design rounds, and HR interviews. Here are your verified placement offers.</p>
+            </div>
+          </div>
+          <div class="hero-stats-row">
+            <div class="hero-stat-box">
+              <span class="hero-stat-num" id="cracked-count-hero">0</span>
+              <span class="hero-stat-label">Total Offers Cracked</span>
+            </div>
+            <div class="hero-stat-box">
+              <span class="hero-stat-num text-emerald" id="cracked-highest-hero">₹ 0 LPA</span>
+              <span class="hero-stat-label">Top Package Offered</span>
+            </div>
+            <div class="hero-stat-box">
+              <span class="hero-stat-num text-violet" id="cracked-avg-hero">₹ 0 LPA</span>
+              <span class="hero-stat-label">Average CTC</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cracked Offers Grid -->
+        <div class="section-divider-row">
+          <h3 class="sub-section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+            <span>Verified Job Offers Secured (Cracked Interviews)</span>
+          </h3>
+          <button class="btn btn-sm btn-outline-gold" id="btn-fire-confetti">
+            <span>🎉 Celebrate With Confetti</span>
+          </button>
+        </div>
+
+        <div class="cracked-offers-grid" id="cracked-offers-container">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Active Interview Rounds & Schedules -->
+        <div class="section-divider-row mt-6">
+          <h3 class="sub-section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Scheduled & In-Progress Interview Rounds</span>
+          </h3>
+          <span class="badge-pill-info">Live Rounds</span>
+        </div>
+
+        <div class="interviews-schedule-list" id="interviews-schedule-container">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Interview Preparation & Company Tips Card -->
+        <div class="prep-tips-card">
+          <div class="prep-tips-header">
+            <div class="tip-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+            </div>
+            <div>
+              <h4>Campus Interview Pro-Tips & Cheat Sheet</h4>
+              <p>Top questions asked by recruiters during campus technical rounds this placement season.</p>
+            </div>
+          </div>
+          <div class="tips-grid">
+            <div class="tip-box">
+              <span class="tip-badge">DSA & Algorithms</span>
+              <h5>Data Structures Round</h5>
+              <p>Practice Graph Traversals (BFS/DFS), Dynamic Programming (Knapsack variants), and Trie structures. Always state time/space complexity before coding.</p>
+            </div>
+            <div class="tip-box">
+              <span class="tip-badge">System Design</span>
+              <h5>Low-Level & High-Level Design</h5>
+              <p>Be prepared to design URL shortener, Rate Limiter, or Parking Lot using OOP principles, SOLID patterns, and Database normalization.</p>
+            </div>
+            <div class="tip-box">
+              <span class="tip-badge">Certifications Impact</span>
+              <h5>Certifications in Interviews</h5>
+              <p>Interviewers heavily probe practical scenarios from your verified Cloud (AWS/Azure) and DevOps certifications. Be ready to explain your hands-on labs.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: CERTIFICATIONS HUB -->
+      <section class="portal-view hidden" id="view-certifications">
+        <div class="view-header-bar">
+          <div>
+            <h2 class="section-title">Certifications Hub & Readiness Index</h2>
+            <p class="section-desc">Manage your verified certifications, view mandatory certifications demanded by campus recruiters, and boost job eligibility.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-cert-modal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span>Add New Certification</span>
+          </button>
+        </div>
+
+        <!-- Student Earned Certifications Section -->
+        <div class="cert-section-card">
+          <div class="cert-section-header">
+            <div>
+              <h3>Alexandria's Verified Certifications (<span id="user-cert-count">0</span>)</h3>
+              <p class="sub-text">These verified credentials are automatically matched against job criteria to unlock eligibility.</p>
+            </div>
+            <span class="cert-shield-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>100% University Verified</span>
+            </span>
+          </div>
+
+          <div class="student-certs-grid" id="student-certs-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Campus High-Demand Certifications Analysis -->
+        <div class="cert-market-section mt-6">
+          <div class="section-divider-row">
+            <div>
+              <h3 class="sub-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Most In-Demand Certifications in Current Campus Drives</span>
+              </h3>
+              <p class="section-desc">Acquiring these certifications will unlock the highest number of high-paying campus roles.</p>
+            </div>
+          </div>
+
+          <div class="demand-certs-grid" id="demand-certs-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: JOB DETAILS & FULL ELIGIBILITY BREAKDOWN -->
+  <div class="modal-overlay hidden" id="job-details-modal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-company-info">
+          <div class="company-logo-modal" id="modal-company-logo"></div>
+          <div>
+            <h3 class="modal-title" id="modal-job-title">Job Title</h3>
+            <p class="modal-subtitle" id="modal-company-name">Company Name • Location</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btn-close-job-modal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Highlights Bar -->
+        <div class="job-modal-stats-bar">
+          <div class="modal-stat">
+            <span class="stat-label">Package (CTC)</span>
+            <span class="stat-val highlight-green" id="modal-ctc">₹ 0 LPA</span>
+          </div>
+          <div class="modal-stat">
+            <span class="stat-label">Min CGPA Required</span>
+            <span class="stat-val" id="modal-min-cgpa">7.5</span>
+          </div>
+          <div class="modal-stat">
+            <span class="stat-label">Eligible Branches</span>
+            <span class="stat-val" id="modal-branches">CSE, IT</span>
+          </div>
+          <div class="modal-stat">
+            <span class="stat-label">Application Deadline</span>
+            <span class="stat-val text-amber" id="modal-deadline">Oct 15, 2026</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Eligibility Verdict Box -->
+        <div class="eligibility-verdict-box" id="modal-eligibility-verdict">
+          <!-- Dynamic verdict message -->
+        </div>
+
+        <!-- Certifications Required Section -->
+        <div class="modal-section">
+          <h4 class="section-heading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            <span>Certifications Required For This Job</span>
+          </h4>
+          <p class="text-muted mb-2">Our eligibility engine checks your earned certifications against the recruiter's specifications:</p>
+          <div class="modal-cert-list" id="modal-cert-list">
+            <!-- Dynamic cert pills -->
+          </div>
+        </div>
+
+        <!-- Job Description -->
+        <div class="modal-section">
+          <h4 class="section-heading">About The Role & Tech Stack</h4>
+          <p id="modal-job-desc" class="modal-desc-text"></p>
+        </div>
+
+        <!-- Selection Process Stages -->
+        <div class="modal-section">
+          <h4 class="section-heading">Campus Selection Rounds</h4>
+          <div class="selection-rounds-stepper" id="modal-rounds-stepper">
+            <!-- Stepper rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-modal-cancel">Close</button>
+        <button class="btn btn-primary" id="btn-modal-apply">Apply For This Job</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: EDIT STUDENT PROFILE / ELIGIBILITY CRITERIA -->
+  <div class="modal-overlay hidden" id="student-profile-modal">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3 class="modal-title">Student Placement Profile</h3>
+          <p class="modal-subtitle">Update your academic credentials & watch all job eligibility badges calculate in real time!</p>
+        </div>
+        <button class="modal-close-btn" id="btn-close-profile-modal">&times;</button>
+      </div>
+
+      <form id="form-edit-profile" class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="input-student-name">Full Name</label>
+            <input type="text" id="input-student-name" required value="Alexandria Chen" class="form-input">
+          </div>
+          <div class="form-group flex-1">
+            <label for="input-roll-no">Roll Number / Student ID</label>
+            <input type="text" id="input-roll-no" required value="22CS1048" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="input-department">Branch / Department</label>
+            <select id="input-department" class="form-select">
+              <option value="Computer Science (CSE)" selected>Computer Science (CSE)</option>
+              <option value="Information Technology (IT)">Information Technology (IT)</option>
+              <option value="Electronics & Communication (ECE)">Electronics & Communication (ECE)</option>
+              <option value="Electrical Engineering (EEE)">Electrical Engineering (EEE)</option>
+              <option value="Mechanical Engineering (MECH)">Mechanical Engineering (MECH)</option>
+              <option value="Data Science & AI">Data Science & AI</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="input-grad-year">Graduation Batch</label>
+            <select id="input-grad-year" class="form-select">
+              <option value="2026" selected>2026 (Final Year)</option>
+              <option value="2027">2027 (Pre-Final Year)</option>
+              <option value="2025">2025 (Alumni)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="input-cgpa">
+              Current Cumulative CGPA: <strong class="text-emerald" id="cgpa-val-preview">8.8</strong> / 10
+            </label>
+            <div class="slider-wrapper">
+              <input type="range" id="input-cgpa" min="5.0" max="10.0" step="0.1" value="8.8" class="form-range">
+              <div class="range-labels">
+                <span>5.0</span>
+                <span>6.0</span>
+                <span>7.0</span>
+                <span>8.0</span>
+                <span>9.0</span>
+                <span>10.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="input-backlogs">Active Standing Backlogs</label>
+            <select id="input-backlogs" class="form-select">
+              <option value="0" selected>0 Backlogs (Eligible for all top tier drives)</option>
+              <option value="1">1 Backlog</option>
+              <option value="2">2 Backlogs</option>
+              <option value="3">3+ Backlogs</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Student Earned Certifications Checkboxes -->
+        <div class="form-group">
+          <label class="form-label-bold">Your Verified Certifications (Select to toggle):</label>
+          <div class="cert-checkbox-grid" id="profile-cert-toggles">
+            <!-- Dynamic checkboxes -->
+          </div>
+        </div>
+
+        <div class="profile-helper-note">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Saving updates your eligibility across all campus jobs immediately!</span>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-profile">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile & Recalculate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: ADD NEW CERTIFICATION -->
+  <div class="modal-overlay hidden" id="add-cert-modal">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Verified Certification</h3>
+        <button class="modal-close-btn" id="btn-close-cert-modal">&times;</button>
+      </div>
+      <form id="form-add-cert" class="modal-body">
+        <div class="form-group">
+          <label for="cert-name">Certification Title</label>
+          <input type="text" id="cert-name" required placeholder="e.g. AWS Certified Solutions Architect" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="cert-issuer">Issuing Organization</label>
+          <select id="cert-issuer" class="form-select">
+            <option value="Amazon Web Services (AWS)">Amazon Web Services (AWS)</option>
+            <option value="Google Cloud (GCP)">Google Cloud (GCP)</option>
+            <option value="Microsoft Azure">Microsoft Azure</option>
+            <option value="Meta / Coursera">Meta / Coursera</option>
+            <option value="Cisco Networking Academy">Cisco Networking Academy</option>
+            <option value="Linux Foundation (CKA/CKAD)">Linux Foundation (CKA/CKAD)</option>
+            <option value="Oracle Certified Professional">Oracle Certified Professional</option>
+            <option value="Other Industry Standard">Other Industry Standard</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cert-date">Issue Date</label>
+          <input type="month" id="cert-date" required value="2025-08" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="cert-id">Credential Verification ID</label>
+          <input type="text" id="cert-id" required placeholder="e.g. AWS-CERT-8849204" value="VERIFIED-NX-928" class="form-input">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-cert">Cancel</button>
+          <button type="submit" class="btn btn-primary">Verify & Add Credential</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: POST NEW CAMPUS JOB (RECRUITER / TPO MODE) -->
+  <div class="modal-overlay hidden" id="post-job-modal">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Post New Campus Recruitment Drive</h3>
+          <p class="modal-subtitle">Training & Placement Cell (TPO) Admin Dashboard</p>
+        </div>
+        <button class="modal-close-btn" id="btn-close-post-job">&times;</button>
+      </div>
+
+      <form id="form-post-job" class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="new-job-company">Company Name</label>
+            <input type="text" id="new-job-company" required placeholder="e.g. Adobe, Uber, Nvidia" class="form-input">
+          </div>
+          <div class="form-group flex-1">
+            <label for="new-job-title">Job Designation / Role</label>
+            <input type="text" id="new-job-title" required placeholder="e.g. Member of Technical Staff - I" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="new-job-category">Role Domain</label>
+            <select id="new-job-category" class="form-select">
+              <option value="Software Engineering">Software Engineering</option>
+              <option value="Cloud & DevOps">Cloud & DevOps</option>
+              <option value="Data & AI">Data & AI</option>
+              <option value="Cybersecurity">Cybersecurity</option>
+              <option value="Fullstack & Web">Fullstack & Web</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label for="new-job-package">CTC Package (in LPA)</label>
+            <input type="number" id="new-job-package" min="3" max="100" step="0.5" required placeholder="e.g. 24" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="new-job-cgpa">Minimum Required CGPA</label>
+            <input type="number" id="new-job-cgpa" min="5.0" max="10.0" step="0.1" value="7.5" required class="form-input">
+          </div>
+          <div class="form-group flex-1">
+            <label for="new-job-deadline">Application Deadline</label>
+            <input type="date" id="new-job-deadline" required class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="new-job-certs">Mandatory / Required Certifications (comma separated)</label>
+          <input type="text" id="new-job-certs" placeholder="e.g. AWS Certified Cloud Practitioner, Docker & Kubernetes" class="form-input">
+          <small class="text-muted">Students who have these certifications will be verified as 100% eligible.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="new-job-desc">Job Description & Responsibilities</label>
+          <textarea id="new-job-desc" rows="3" required placeholder="Brief description of requirements, tech stack, and interview process..." class="form-textarea"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-post-job">Cancel</button>
+          <button type="submit" class="btn btn-primary">Publish Campus Drive</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5: OFFER LETTER CELEBRATION MODAL -->
+  <div class="modal-overlay hidden" id="offer-letter-modal">
+    <div class="modal-card modal-md offer-modal-glow">
+      <div class="offer-letter-card">
+        <div class="offer-header">
+          <div class="offer-seal">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          </div>
+          <div>
+            <span class="offer-tagline">OFFICIAL PLACEMENT OFFER</span>
+            <h3 class="offer-company-title" id="offer-company-title">Microsoft India</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-offer-modal">&times;</button>
+        </div>
+
+        <div class="offer-body">
+          <p class="offer-salutation">Dear <strong id="offer-student-name">Alexandria Chen</strong>,</p>
+          <p class="offer-text">
+            On behalf of the campus selection committee, we are delighted to offer you the position of
+            <strong id="offer-role-title">Software Engineer - Cloud Systems</strong>. You have demonstrated exemplary technical problem-solving, architectural reasoning, and certified skills throughout all interview rounds!
+          </p>
+
+          <div class="offer-breakdown-card">
+            <div class="offer-row">
+              <span>Annual CTC Package:</span>
+              <strong class="text-emerald text-lg" id="offer-ctc-display">₹ 28.50 LPA</strong>
+            </div>
+            <div class="offer-row">
+              <span>Base Salary Component:</span>
+              <strong id="offer-base-display">₹ 18.00 LPA</strong>
+            </div>
+            <div class="offer-row">
+              <span>Joining & Retention Bonus:</span>
+              <strong id="offer-bonus-display">₹ 5.00 LPA</strong>
+            </div>
+            <div class="offer-row">
+              <span>Work Location:</span>
+              <span id="offer-location-display">Bengaluru / Hyderabad (Hybrid)</span>
+            </div>
+          </div>
+
+          <div class="offer-decision-actions" id="offer-actions-wrap">
+            <button class="btn btn-success flex-1" id="btn-accept-offer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Accept Offer Letter</span>
+            </button>
+            <button class="btn btn-outline-danger" id="btn-decline-offer">Decline</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
